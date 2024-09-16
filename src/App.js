@@ -1,7 +1,7 @@
 import customers from "./memdb.js";
 import "./App.css";
 import React, { useState, useEffect } from "react";
-
+import CustomerList from "./components/CustomerList.jsx";
 function log(message) {
   console.log(message);
 }
@@ -10,6 +10,7 @@ export function App(params) {
   let blankCustomer = { id: -1, name: "", email: "", password: "" };
   const [formObject, setFormObject] = useState({ blankCustomer });
   const [selectedItem, setSelecteditem] = useState({ blankCustomer });
+  const [customersList, setCustomers] = useState(customers);
   let mode = formObject.id >= 0 ? "Update" : "Add";
   const getCustomers = function () {
     log("in getCustomers()");
@@ -56,33 +57,11 @@ export function App(params) {
 
   return (
     <div>
-      <div className="boxed">
-        <h4>Customer List</h4>
-        <table id="customer-list">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Pass</th>
-            </tr>
-          </thead>
-          <tbody>
-            {customers.map((item, index) => {
-              return (
-                <tr
-                  key={item.id}
-                  onClick={() => handleListClick(item)}
-                  className={selected(item)}
-                >
-                  <td>{item.name}</td>
-                  <td>{item.email}</td>
-                  <td>{item.password}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <CustomerList
+        customers={customersList}
+        handleListClick={handleListClick}
+        selected={selected}
+      />
       <div className="boxed">
         <div>
           <h4>{mode}</h4>
