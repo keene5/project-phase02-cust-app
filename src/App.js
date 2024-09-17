@@ -1,4 +1,5 @@
-import customers from "./memdb.js";
+import { getAll, post, put, deleteById } from "./memdb.js";
+
 import "./App.css";
 import React, { useState, useEffect } from "react";
 import CustomerList from "./components/CustomerList.jsx";
@@ -11,10 +12,11 @@ export function App(params) {
   let blankCustomer = { id: -1, name: "", email: "", password: "" };
   const [formObject, setFormObject] = useState({ blankCustomer });
   const [selectedItem, setSelecteditem] = useState({ blankCustomer });
-  const [customersList, setCustomers] = useState(customers);
-  
+  const [customersList, setCustomers] = useState([]);
+
   const getCustomers = function () {
     log("in getCustomers()");
+    setCustomers(getAll());
   };
 
   const selected = function (item) {
@@ -57,6 +59,10 @@ export function App(params) {
     log("in onSaveClick()");
   };
 
+  useEffect(() => {
+    getCustomers();
+  }, []);
+
   return (
     <div>
       <CustomerList
@@ -64,12 +70,12 @@ export function App(params) {
         handleListClick={handleListClick}
         selected={selected}
       />
-      <CustomerForm 
-      formObject = {formObject}
-      onCancelClick = {onCancelClick}
-      onDeleteClick={onDeleteClick}
-      onSaveClick={onSaveClick}/>
-
+      <CustomerForm
+        formObject={formObject}
+        onCancelClick={onCancelClick}
+        onDeleteClick={onDeleteClick}
+        onSaveClick={onSaveClick}
+      />
     </div>
   );
 }
