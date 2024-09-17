@@ -2,6 +2,7 @@ import customers from "./memdb.js";
 import "./App.css";
 import React, { useState, useEffect } from "react";
 import CustomerList from "./components/CustomerList.jsx";
+import CustomerForm from "./components/CustomerForm.jsx";
 function log(message) {
   console.log(message);
 }
@@ -11,17 +12,17 @@ export function App(params) {
   const [formObject, setFormObject] = useState({ blankCustomer });
   const [selectedItem, setSelecteditem] = useState({ blankCustomer });
   const [customersList, setCustomers] = useState(customers);
-  let mode = formObject.id >= 0 ? "Update" : "Add";
+  
   const getCustomers = function () {
     log("in getCustomers()");
   };
 
   const selected = function (item) {
-    console.log(item.id == formObject.id);
+    console.log(item.id === formObject.id);
 
-    console.log(item.id != selectedItem.id);
+    console.log(item.id !== selectedItem.id);
 
-    if (item.id == formObject.id && formObject.id == selectedItem.id) {
+    if (item.id === formObject.id && formObject.id === selectedItem.id) {
       return "selected";
     } else {
       return "";
@@ -44,6 +45,7 @@ export function App(params) {
   };
 
   let onCancelClick = function () {
+    setFormObject(blankCustomer);
     log("in onCancelClick()");
   };
 
@@ -62,58 +64,12 @@ export function App(params) {
         handleListClick={handleListClick}
         selected={selected}
       />
-      <div className="boxed">
-        <div>
-          <h4>{mode}</h4>
-        </div>
-        <form>
-          <table id="customer-add-update">
-            <tbody>
-              <tr>
-                <td className={"label"}>Name:</td>
-                <td>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formObject.name}
-                    placeholder="Customer Name"
-                    required
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td className={"label"}>Email:</td>
-                <td>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formObject.email}
-                    placeholder="name@company.com"
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td className={"label"}>Pass:</td>
-                <td>
-                  <input
-                    type="text"
-                    name="password"
-                    value={formObject.password}
-                    placeholder="password"
-                  />
-                </td>
-              </tr>
-              <tr className="button-bar">
-                <td colSpan="2">
-                  <input type="button" value="Delete" onClick={onDeleteClick} />
-                  <input type="button" value="Save" onClick={onSaveClick} />
-                  <input type="button" value="Cancel" onClick={onCancelClick} />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </form>
-      </div>
+      <CustomerForm 
+      formObject = {formObject}
+      onCancelClick = {onCancelClick}
+      onDeleteClick={onDeleteClick}
+      onSaveClick={onSaveClick}/>
+
     </div>
   );
 }
