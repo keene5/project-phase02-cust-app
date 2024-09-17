@@ -13,6 +13,7 @@ export function App(params) {
   const [formObject, setFormObject] = useState({ blankCustomer });
   const [selectedItem, setSelecteditem] = useState({ blankCustomer });
   const [customersList, setCustomers] = useState([]);
+  let mode = formObject.id >= 0 ? "Update" : "Add";
 
   const getCustomers = function () {
     log("in getCustomers()");
@@ -44,6 +45,11 @@ export function App(params) {
 
   const handleInputChange = function (event) {
     log("in handleInputChange()");
+    const name = event.target.name;
+    const value = event.target.value;
+    let newFormObject = { ...formObject };
+    newFormObject[name] = value;
+    setFormObject(newFormObject);
   };
 
   let onCancelClick = function () {
@@ -53,10 +59,24 @@ export function App(params) {
 
   let onDeleteClick = function () {
     log("in onDeleteClick()");
+    if (formObject.id >= 0) {
+      deleteById(formObject.id);
+    }
+    setFormObject(blankCustomer);
   };
 
   let onSaveClick = function () {
-    log("in onSaveClick()");
+    if (formObject.name === "" || formObject.email === "" || formObject.password === "") {
+      alert("All Fields require a value!");
+    } else {
+      if (mode === "Add") {
+        post(formObject);
+      }
+      if (mode === "Update") {
+        put(formObject.id, formObject);
+      }
+      setFormObject(blankCustomer);
+    }
   };
 
   useEffect(() => {
@@ -75,6 +95,8 @@ export function App(params) {
         onCancelClick={onCancelClick}
         onDeleteClick={onDeleteClick}
         onSaveClick={onSaveClick}
+        handleInputChange={handleInputChange}
+        mode={mode}
       />
     </div>
   );

@@ -1,7 +1,7 @@
 import React from 'react'
 
-function CustomerForm({formObject, onDeleteClick, onSaveClick, onCancelClick }) {
-  let mode = formObject.id >= 0 ? "Update" : "Add";
+function CustomerForm({formObject, onDeleteClick, onSaveClick, onCancelClick, handleInputChange, mode}) {
+
   return (
           <div className="boxed">
         <div>
@@ -17,6 +17,7 @@ function CustomerForm({formObject, onDeleteClick, onSaveClick, onCancelClick }) 
                     type="text"
                     name="name"
                     value={formObject.name}
+                    onChange={(e) => {handleInputChange(e)}}
                     placeholder="Customer Name"
                     required
                   />
@@ -29,6 +30,7 @@ function CustomerForm({formObject, onDeleteClick, onSaveClick, onCancelClick }) 
                     type="email"
                     name="email"
                     value={formObject.email}
+                    onChange={(e) => {handleInputChange(e)}}
                     placeholder="name@company.com"
                   />
                 </td>
@@ -37,9 +39,10 @@ function CustomerForm({formObject, onDeleteClick, onSaveClick, onCancelClick }) 
                 <td className={"label"}>Pass:</td>
                 <td>
                   <input
-                    type="text"
+                    type="password"
                     name="password"
                     value={formObject.password}
+                    onChange={(e) => {handleInputChange(e)}}
                     placeholder="password"
                   />
                 </td>
