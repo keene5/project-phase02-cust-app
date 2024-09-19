@@ -1,30 +1,33 @@
-import { getAll, post, put, deleteById } from "./memdb.js";
-
-import "./App.css";
+import axios from "axios";
 import React, { useState, useEffect } from "react";
 import CustomerList from "./components/CustomerList.jsx";
 import CustomerForm from "./components/CustomerForm.jsx";
+import "./App.css";
+import { validateEmail, validatePassword } from "./validate.js";
+
 function log(message) {
   console.log(message);
 }
 
 export function App(params) {
   let blankCustomer = { id: -1, name: "", email: "", password: "" };
-  const [formObject, setFormObject] = useState({ blankCustomer });
-  const [selectedItem, setSelecteditem] = useState({ blankCustomer });
+  const [formObject, setFormObject] = useState(blankCustomer);
+  const [selectedItem, setSelecteditem] = useState(blankCustomer);
   const [customersList, setCustomers] = useState([]);
+  const [errors, setErrors] = useState({ name: '', email: '', password: '' });
   let mode = formObject.id >= 0 ? "Update" : "Add";
 
-  const getCustomers = function () {
+  const getCustomers = async () => {
     log("in getCustomers()");
-    setCustomers(getAll());
+    try {
+      const response = await axios.get("/api/data"); // No need to include 'http://localhost:4000' if using proxy
+      setCustomers(response.data);
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+    }
   };
 
   const selected = function (item) {
-    console.log(item.id === formObject.id);
-
-    console.log(item.id !== selectedItem.id);
-
     if (item.id === formObject.id && formObject.id === selectedItem.id) {
       return "selected";
     } else {
@@ -45,6 +48,7 @@ export function App(params) {
 
   const handleInputChange = function (event) {
     log("in handleInputChange()");
+    setErrors({ name: '', email: '', password: '' });
     const name = event.target.name;
     const value = event.target.value;
     let newFormObject = { ...formObject };
@@ -57,27 +61,63 @@ export function App(params) {
     log("in onCancelClick()");
   };
 
-  let onDeleteClick = function () {
+  let onDeleteClick = async function () {
     log("in onDeleteClick()");
     if (formObject.id >= 0) {
-      deleteById(formObject.id);
+      try {
+        await axios.delete(`/api/data/${formObject.id}`); // No need to include 'http://localhost:4000' if using proxy
+        getCustomers(); // Refresh the customer list
+      } catch (error) {
+        console.error("Error deleting customer:", error);
+      }
     }
     setFormObject(blankCustomer);
   };
 
-  let onSaveClick = function () {
-    if (formObject.name === "" || formObject.email === "" || formObject.password === "") {
-      alert("All Fields require a value!");
-    } else {
-      if (mode === "Add") {
-        post(formObject);
-      }
-      if (mode === "Update") {
-        put(formObject.id, formObject);
+  let onSaveClick = async function () {
+    setErrors({ name: '', email: '', password: '' });
+
+    let newErrors = { ...errors };
+    let hasErrors = false;
+  
+    if (formObject.name === '') {
+      newErrors.name = 'Name is required';
+      hasErrors = true;
+    }
+  
+    if (formObject.email === '') {
+      newErrors.email = 'Email is required';
+      hasErrors = true;
+    } else if (!validateEmail(formObject.email)) {
+      newErrors.email = 'Invalid email';
+      hasErrors = true;
+    }
+  
+    if (formObject.password === '') {
+      newErrors.password = 'Password is required';
+      hasErrors = true;
+    } else if (!validatePassword(formObject.password)) {
+      newErrors.password = 'Invalid password';
+      hasErrors = true;
+    }
+  
+    if (hasErrors) {
+      setErrors(newErrors);
+      return;
+    }
+      try {
+        if (mode === "Add") {
+          await axios.post("/api/data", formObject); // No need to include 'http://localhost:4000' if using proxy
+        } else if (mode === "Update") {
+          await axios.put(`/api/data/${formObject.id}`, formObject); // No need to include 'http://localhost:4000' if using proxy
+        }
+        getCustomers(); // Refresh the customer list
+      } catch (error) {
+        console.error("Error saving customer:", error);
       }
       setFormObject(blankCustomer);
-    }
-  };
+    };
+  
 
   useEffect(() => {
     getCustomers();
@@ -97,6 +137,7 @@ export function App(params) {
         onSaveClick={onSaveClick}
         handleInputChange={handleInputChange}
         mode={mode}
+        errors={errors}
       />
     </div>
   );

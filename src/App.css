@@ -42,21 +42,30 @@ form{
 
 div#root {
     background-color: lightgrey;
-    width: 350px;
+    width: 560px;
 }
 
 .boxed {
     border: 1.5px solid #aaa;
-    width: 315px;
+    width: 515px;
     margin: 10px;
     background-color: #bababa;
     display: inline-block;
     border-radius: 5px;
-    padding-left: 5px;;
-    padding-right: 5px;
-    padding-top:0px;
-    padding-bottom: 5px;
-}
+    padding: 5px;
+    overflow-x: auto; /* Add horizontal scroll to handle overflow */
+  }
+
+  .boxed2 {
+    border: 1.5px solid #aaa;
+    width: 415px;
+    margin: 5px;
+    background-color: #bababa;
+    display: inline-block;
+    border-radius: 3px;
+    padding: 5px;
+    overflow-x: auto; /* Add horizontal scroll to handle overflow */
+  }
 
 .scroll{
     height: 200px;
@@ -72,7 +81,7 @@ div#root {
 }
 
 table#customer-add-update tbody tr td.label{
-    text-align: right;
+    text-align: center;
 }
 
 #customer-list, table#customer-add-update {
@@ -81,3 +90,36 @@ table#customer-add-update tbody tr td.label{
     border: 0px;
 }
 
+#customer-list {
+    width: max-content; /* Set the table width to maximum content size */
+    table-layout: auto; /* Use auto table layout */
+  }
+  
+  #customer-list th,
+  #customer-list td {
+    white-space: normal; /* Allow line breaks within table cells */
+    overflow: visible; /* Show overflowing content */
+    text-overflow: clip; /* Clip the content without ellipsis */
+  }
+
+  .center-aligned {
+    text-align: center;
+  }
+
+  .error {
+    font-weight: bold;
+    color: red;
+    animation: flash 1s infinite;
+  }
+  
+  @keyframes flash {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }

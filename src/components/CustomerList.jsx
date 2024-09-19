@@ -1,4 +1,5 @@
 import React from 'react'
+import '../App.css';
 
 function CustomerList({customers, handleListClick, selected}) {
   return (
@@ -6,10 +7,10 @@ function CustomerList({customers, handleListClick, selected}) {
         <h4>Customer List</h4>
         <table id="customer-list">
           <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Pass</th>
+            <tr className='left-aligned'>
+              <th className='left-aligned'>Name</th>
+              <th className='left-aligned'>Email</th>
+              <th className='left-aligned'>Pass</th>
             </tr>
           </thead>
           <tbody>
