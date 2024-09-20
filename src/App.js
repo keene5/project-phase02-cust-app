@@ -3,7 +3,12 @@ import React, { useState, useEffect } from "react";
 import CustomerList from "./components/CustomerList.jsx";
 import CustomerForm from "./components/CustomerForm.jsx";
 import "./App.css";
-import { validateEmail, validatePassword } from "./validate.js";
+import { validateEmail, validatePassword, determineErrors } from "./validate.js";
+
+
+
+
+import { isUnsanitaryInput } from "./sanitize.js";
 
 function log(message) {
   console.log(message);
@@ -14,7 +19,7 @@ export function App(params) {
   const [formObject, setFormObject] = useState(blankCustomer);
   const [selectedItem, setSelecteditem] = useState(blankCustomer);
   const [customersList, setCustomers] = useState([]);
-  const [errors, setErrors] = useState({ name: '', email: '', password: '' });
+  const [errors, setErrors] = useState({ name: "", email: "", password: "" });
   let mode = formObject.id >= 0 ? "Update" : "Add";
 
   const getCustomers = async () => {
@@ -48,7 +53,7 @@ export function App(params) {
 
   const handleInputChange = function (event) {
     log("in handleInputChange()");
-    setErrors({ name: '', email: '', password: '' });
+    setErrors({ name: "", email: "", password: "" });
     const name = event.target.name;
     const value = event.target.value;
     let newFormObject = { ...formObject };
@@ -57,12 +62,14 @@ export function App(params) {
   };
 
   let onCancelClick = function () {
+    setErrors({ name: "", email: "", password: "" });
     setFormObject(blankCustomer);
     log("in onCancelClick()");
   };
 
   let onDeleteClick = async function () {
     log("in onDeleteClick()");
+    setErrors({ name: "", email: "", password: "" });
     if (formObject.id >= 0) {
       try {
         await axios.delete(`/api/data/${formObject.id}`); // No need to include 'http://localhost:4000' if using proxy
@@ -75,49 +82,27 @@ export function App(params) {
   };
 
   let onSaveClick = async function () {
-    setErrors({ name: '', email: '', password: '' });
+    setErrors({ name: "", email: "", password: "" });
 
-    let newErrors = { ...errors };
-    let hasErrors = false;
-  
-    if (formObject.name === '') {
-      newErrors.name = 'Name is required';
-      hasErrors = true;
-    }
-  
-    if (formObject.email === '') {
-      newErrors.email = 'Email is required';
-      hasErrors = true;
-    } else if (!validateEmail(formObject.email)) {
-      newErrors.email = 'Invalid email';
-      hasErrors = true;
-    }
-  
-    if (formObject.password === '') {
-      newErrors.password = 'Password is required';
-      hasErrors = true;
-    } else if (!validatePassword(formObject.password)) {
-      newErrors.password = 'Invalid password';
-      hasErrors = true;
-    }
-  
+    let { hasErrors, newErrors } = determineErrors(errors, formObject);
+
     if (hasErrors) {
       setErrors(newErrors);
       return;
     }
-      try {
-        if (mode === "Add") {
-          await axios.post("/api/data", formObject); // No need to include 'http://localhost:4000' if using proxy
-        } else if (mode === "Update") {
-          await axios.put(`/api/data/${formObject.id}`, formObject); // No need to include 'http://localhost:4000' if using proxy
-        }
-        getCustomers(); // Refresh the customer list
-      } catch (error) {
-        console.error("Error saving customer:", error);
+
+    try {
+      if (mode === "Add") {
+        await axios.post("/api/data", formObject); // No need to include 'http://localhost:4000' if using proxy
+      } else if (mode === "Update") {
+        await axios.put(`/api/data/${formObject.id}`, formObject); // No need to include 'http://localhost:4000' if using proxy
       }
-      setFormObject(blankCustomer);
-    };
-  
+      getCustomers(); // Refresh the customer list
+    } catch (error) {
+      console.error("Error saving customer:", error);
+    }
+    setFormObject(blankCustomer);
+  };
 
   useEffect(() => {
     getCustomers();
@@ -144,3 +129,4 @@ export function App(params) {
 }
 
 export default App;
+

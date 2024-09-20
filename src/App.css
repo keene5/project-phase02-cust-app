@@ -41,15 +41,15 @@ form{
 }
 
 div#root {
-    background-color: lightgrey;
-    width: 560px;
+    background-color: black;
+    width: 800px;
 }
 
 .boxed {
     border: 1.5px solid #aaa;
-    width: 515px;
+    width: 750px;
     margin: 10px;
-    background-color: #bababa;
+    background-color: yellowgreen;
     display: inline-block;
     border-radius: 5px;
     padding: 5px;
@@ -60,7 +60,7 @@ div#root {
     border: 1.5px solid #aaa;
     width: 415px;
     margin: 5px;
-    background-color: #bababa;
+    background-color: yellowgreen;
     display: inline-block;
     border-radius: 3px;
     padding: 5px;
